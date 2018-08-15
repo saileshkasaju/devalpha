@@ -1,9 +1,31 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { loginUser } from '../../actions/authActions';
+import TextFieldGroup from '../commons/TextFieldGroup';
 
 class Login extends Component {
+  static propTypes = {
+    loginUser: PropTypes.func.isRequired,
+    auth: PropTypes.object.isRequired,
+    errors: PropTypes.object.isRequired,
+  };
   state = {
     errors: {},
   };
+  componentDidMount() {
+    if (this.props.auth.isAuthenticated) {
+      this.props.history.push('/dashboard');
+    }
+  }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.auth.isAuthenticated) {
+      this.props.history.push('/dashboard');
+    }
+    if (nextProps.errors) {
+      this.setState({ errors: nextProps.errors });
+    }
+  }
   onChange = e =>
     this.setState({
       [e.target.name]: e.target.value,
@@ -11,14 +33,15 @@ class Login extends Component {
   onSubmit = e => {
     e.preventDefault();
     const { ...data } = this.state;
-    const user = {
+    const userData = {
       email: data.email,
       password: data.password,
     };
-    console.log(user);
+    this.props.loginUser(userData);
   };
   render() {
     const { ...data } = this.state;
+    const { errors } = data;
     return (
       <div className="login">
         <div className="container">
@@ -26,29 +49,25 @@ class Login extends Component {
             <div className="col-md-8 m-auto">
               <h1 className="display-4 text-center">Log In</h1>
               <p className="lead text-center">Sign in to your DevConnector account</p>
-              <form onSubmit={this.onSubmit}>
-                <div className="form-group">
-                  <input
-                    type="email"
-                    className="form-control form-control-lg"
-                    placeholder="Email Address"
-                    name="email"
-                    value={data.email || ''}
-                    onChange={this.onChange}
-                    autoComplete="username"
-                  />
-                </div>
-                <div className="form-group">
-                  <input
-                    type="password"
-                    className="form-control form-control-lg"
-                    placeholder="Password"
-                    name="password"
-                    value={data.password || ''}
-                    onChange={this.onChange}
-                    autoComplete="current-password"
-                  />
-                </div>
+              <form noValidate onSubmit={this.onSubmit}>
+                <TextFieldGroup
+                  type="email"
+                  name="email"
+                  value={data.email}
+                  placeholder="Email Address"
+                  error={errors.email}
+                  onChange={this.onChange}
+                  autoComplete="username"
+                />
+                <TextFieldGroup
+                  type="password"
+                  name="password"
+                  value={data.password}
+                  placeholder="Password"
+                  error={errors.password}
+                  onChange={this.onChange}
+                  autoComplete="current-password"
+                />
                 <input type="submit" className="btn btn-info btn-block mt-4" />
               </form>
             </div>
@@ -59,4 +78,14 @@ class Login extends Component {
   }
 }
 
-export default Login;
+const mapStateToProps = state => ({
+  auth: state.auth,
+  errors: state.errors,
+});
+
+const mapDispatchToProps = { loginUser };
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Login);
