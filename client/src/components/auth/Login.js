@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { loginUser } from '../../actions/authActions';
-import TextFieldGroup from '../commons/TextFieldGroup';
+import TextFieldGroup from '../common/TextFieldGroup';
 
 class Login extends Component {
   static propTypes = {
@@ -32,16 +32,11 @@ class Login extends Component {
     });
   onSubmit = e => {
     e.preventDefault();
-    const { ...data } = this.state;
-    const userData = {
-      email: data.email,
-      password: data.password,
-    };
-    this.props.loginUser(userData);
+    const { errors, ...data } = this.state;
+    this.props.loginUser(data);
   };
   render() {
-    const { ...data } = this.state;
-    const { errors } = data;
+    const { errors, ...data } = this.state;
     return (
       <div className="login">
         <div className="container">

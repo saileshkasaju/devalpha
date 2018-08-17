@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { registerUser } from '../../actions/authActions';
-import TextFieldGroup from '../commons/TextFieldGroup';
+import TextFieldGroup from '../common/TextFieldGroup';
 
 class Register extends Component {
   static propTypes = {
@@ -32,18 +32,11 @@ class Register extends Component {
     });
   onSubmit = e => {
     e.preventDefault();
-    const { ...data } = this.state;
-    const newUser = {
-      name: data.name,
-      email: data.email,
-      password: data.password,
-      password2: data.password2,
-    };
-    this.props.registerUser(newUser, this.props.history);
+    const { errors, ...data } = this.state;
+    this.props.registerUser(data, this.props.history);
   };
   render() {
-    const { ...data } = this.state;
-    const { errors } = data;
+    const { errors, ...data } = this.state;
     return (
       <div className="register">
         <div className="container">
