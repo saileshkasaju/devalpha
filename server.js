@@ -2,12 +2,30 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const passport = require('passport');
+const cors = require('cors');
 
 const users = require('./routes/api/users');
 const profiles = require('./routes/api/profile');
 const posts = require('./routes/api/posts');
 
 const app = express();
+
+// CORS middleware
+var allowedOrigins = ['http://localhost:3000', 'http://devalpha.surge.sh'];
+app.use(
+  cors({
+    origin: function(origin, callback) {
+      // allow requests with no origin
+      // (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) === -1) {
+        var msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
+    },
+  }),
+);
 
 // Body parser middleware
 app.use(bodyParser.urlencoded({ extended: false }));

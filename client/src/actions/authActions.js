@@ -36,12 +36,6 @@ export const loginUser = userData => dispatch => {
     );
 };
 
-// Set logged in user
-export const setCurrentUser = decoded => ({
-  type: SET_CURRENT_USER,
-  payload: decoded,
-});
-
 // Log user out
 export const logoutUser = () => dispatch => {
   // Remove token from localStorage
@@ -51,3 +45,6 @@ export const logoutUser = () => dispatch => {
   // Set current user to {} which will set isAuthenticated to false
   dispatch(setCurrentUser({}));
 };
+
+// Set logged in user
+export const setCurrentUser = payload => ({ type: SET_CURRENT_USER, payload });

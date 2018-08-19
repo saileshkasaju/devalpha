@@ -2,11 +2,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import isEmpty from '../../validations/isEmpty';
 import TextFieldGroup from '../common/TextFieldGroup';
 import TextAreaFieldGroup from '../common/TextAreaFieldGroup';
 import InputGroup from '../common/InputGroup';
 import SelectListGroup from '../common/SelectListGroup';
-import { createProfile } from '../../actions/profileActions';
+import { createProfile, getCurrentProfile } from '../../actions/profileActions';
 
 // Select options for status
 const options = [
@@ -20,7 +21,6 @@ const options = [
   { label: 'Intern', value: 'Intern' },
   { label: 'Other', value: 'Other' },
 ];
-
 // social inputs list
 const socialInputList = [
   { name: 'twitter', icon: 'fab fa-twitter', placeholder: 'Twitter Profile URL' },
@@ -30,10 +30,19 @@ const socialInputList = [
   { name: 'instagram', icon: 'fab fa-instagram', placeholder: 'Instagram Profile URL' },
 ];
 
-class CreateProfile extends Component {
+const mapStateToProps = state => ({
+  profile: state.profile,
+  errors: state.errors,
+});
+
+const mapDispatchToProps = { createProfile, getCurrentProfile };
+
+class EditProfile extends Component {
   static propTypes = {
+    profile: PropTypes.object.isRequired,
     errors: PropTypes.object.isRequired,
     createProfile: PropTypes.func.isRequired,
+    getCurrentProfile: PropTypes.func.isRequired,
   };
   state = {
     displaySocialInputs: false,
@@ -52,9 +61,37 @@ class CreateProfile extends Component {
     instagram: '',
     errors: {},
   };
+  componentDidMount() {
+    this.props.getCurrentProfile();
+  }
   UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.errors) {
+    if (nextProps.errors !== this.props.error) {
       this.setState({ errors: nextProps.errors });
+    }
+    if (nextProps.profile.profile) {
+      const profile = nextProps.profile.profile;
+
+      // Bring skills array back to CSV
+      const skillsCSV = profile.skills.join();
+
+      // Check for social object
+      profile.social = !isEmpty(profile.social) ? profile.social : {};
+      // If profile field doesn't exist, make empty string
+      this.setState({
+        handle: profile.handle || '',
+        company: profile.company || '',
+        website: profile.website || '',
+        location: profile.location || '',
+        status: profile.status || '',
+        skills: skillsCSV || '',
+        bio: profile.bio || '',
+        githubusername: profile.githubusername || '',
+        twitter: profile.social.twitter || '',
+        facebook: profile.social.facebook || '',
+        linkedin: profile.social.linkedin || '',
+        youtube: profile.social.youtube || '',
+        instagram: profile.social.instagram || '',
+      });
     }
   }
   onChange = e => {
@@ -91,8 +128,7 @@ class CreateProfile extends Component {
         <div className="container">
           <div className="row">
             <div className="col-md-8 m-auto">
-              <h1 className="display-4 text-center">Create Your Profile</h1>
-              <p className="lead text-center">Let's get some information to make your profile stand out</p>
+              <h1 className="display-4 text-center">Edit Profile</h1>
               <small className="d-block pb-3">* = required fields</small>
               <form onSubmit={this.onSubmit}>
                 <TextFieldGroup
@@ -181,13 +217,7 @@ class CreateProfile extends Component {
   }
 }
 
-const mapStateToProps = state => ({
-  errors: state.errors,
-});
-
-const mapDispatchToProps = { createProfile };
-
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withRouter(CreateProfile));
+)(withRouter(EditProfile));
