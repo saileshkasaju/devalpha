@@ -7,11 +7,23 @@ const cors = require('cors');
 const users = require('./routes/api/users');
 const profiles = require('./routes/api/profile');
 const posts = require('./routes/api/posts');
+const https = require('https');
+const fs = require('fs');
+
+const read = fs.readFileSync;
 
 const app = express();
 
+require('dotenv').config();
+
 // CORS middleware
-var allowedOrigins = ['http://localhost:3000', 'http://devalpha.surge.sh'];
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://devalpha.surge.sh',
+  'https://devalpha.surge.sh',
+  'http://www.devalpha.surge.sh',
+  'https://www.devalpha.surge.sh',
+];
 app.use(
   cors({
     origin: function(origin, callback) {
@@ -54,6 +66,28 @@ app.use('/api/users', users);
 app.use('/api/profile', profiles);
 app.use('/api/posts', posts);
 
-const port = process.env.port || 5000;
+// HTTPS server
+let certificate = read('./server.crt', 'utf8');
+let chainLines = read('./domain_ca.crt', 'utf8').split('\n');
+let cert = [];
+let ca = [];
+chainLines.forEach(function(line) {
+  cert.push(line);
+  if (line.match(/-END CERTIFICATE-/)) {
+    ca.push(cert.join('\n'));
+    cert = [];
+  }
+});
 
+let httpsOptions = {
+  key: read('./server.key'),
+  cert: certificate,
+  ca: ca,
+};
+
+secServer = https.createServer(httpsOptions, app);
+secServer.listen(443);
+
+// HTTP server
+const port = process.env.PORT || 5000;
 app.listen(port, () => console.log(`Server running on port ${port}`));
