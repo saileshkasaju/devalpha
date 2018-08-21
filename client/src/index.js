@@ -7,7 +7,7 @@ import registerServiceWorker from './registerServiceWorker';
 
 // axios.defaults.headers.common = { 'X-Requested-With': 'XMLHttpRequest' };
 axios.defaults.baseURL =
-  process.env.NODE_ENV !== 'production' ? 'http://localhost:5000/' : 'http://devalpha.openode.io/';
+  process.env.NODE_ENV !== 'production' ? 'http://localhost:5000/' : 'https://devalpha.openode.io/';
 
 ReactDOM.render(<App />, document.getElementById('root'));
 registerServiceWorker();

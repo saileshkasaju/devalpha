@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { setCurrentUser } from './authActions';
-import { GET_PROFILE, PROFILE_LOADING, CLEAR_CURRENT_PROFILE, SET_ERRORS } from './types';
+import { GET_PROFILE, PROFILE_LOADING, CLEAR_CURRENT_PROFILE, SET_ERRORS, GET_PROFILES } from './types';
 
 // Get current profile
 export const getCurrentProfile = () => dispatch => {
@@ -9,6 +9,15 @@ export const getCurrentProfile = () => dispatch => {
     .get('/api/profile')
     .then(res => dispatch(getProfile(res.data)))
     .catch(err => dispatch(getProfile({})));
+};
+
+// Get profile by handle
+export const getProfileByHandle = handle => dispatch => {
+  dispatch(setProfileLoading());
+  axios
+    .get(`/api/profile/handle/${handle}`)
+    .then(res => dispatch(getProfile(res.data)))
+    .catch(err => dispatch(getProfile(null)));
 };
 
 // Create Profile
@@ -63,6 +72,15 @@ export const deleteAccount = () => dispatch => {
       .then(res => dispatch(setCurrentUser({})))
       .catch(err => dispatch({ type: SET_ERRORS, payload: err.response.data }));
   }
+};
+
+// Get all profiles
+export const getProfiles = () => dispatch => {
+  dispatch(setProfileLoading());
+  axios
+    .get('/api/profile/all')
+    .then(res => dispatch({ type: GET_PROFILES, payload: res.data }))
+    .catch(err => dispatch({ type: GET_PROFILES, payload: null }));
 };
 
 // Profile loading
