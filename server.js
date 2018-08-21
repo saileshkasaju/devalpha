@@ -14,7 +14,7 @@ const read = fs.readFileSync;
 
 const app = express();
 
-require('dotenv').config();
+// require('dotenv').config();
 
 // CORS middleware
 const allowedOrigins = [
@@ -84,9 +84,14 @@ let httpsOptions = {
   cert: certificate,
   ca: ca,
 };
-
-secServer = https.createServer(httpsOptions, app);
-secServer.listen(443);
+if (process.env.NODE_ENV === 'production') {
+  try {
+    secServer = https.createServer(httpsOptions, app);
+    secServer.listen(443);
+  } catch (err) {
+    console.log('https could not be served');
+  }
+}
 
 // HTTP server
 const port = process.env.PORT || 5000;

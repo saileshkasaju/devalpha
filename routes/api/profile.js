@@ -74,7 +74,7 @@ router.get('/handle/:handle', (req, res) => {
     .then(profile => {
       if (!profile) {
         errors.noprofile = 'There is no profile for this user';
-        res.status(404).json(errors);
+        return res.status(404).json(errors);
       }
       res.json(profile);
     })
@@ -93,7 +93,7 @@ router.get('/user/:user_id', (req, res) => {
     .then(profile => {
       if (!profile) {
         errors.noprofile = 'There is no profile for this user';
-        res.status(404).json(errors);
+        return res.status(404).json(errors);
       }
       res.json(profile);
     })
@@ -161,7 +161,7 @@ router.post('/', passport.authenticate('jwt', { session: false }), (req, res) =>
       Profile.findOne({ handle: profileFields.handle }).then(profile => {
         if (profile) {
           errors.handle = 'That handle already exists';
-          res.status(400).json(errors);
+          return res.status(400).json(errors);
         }
 
         // Save Profile
