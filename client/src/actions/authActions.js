@@ -1,15 +1,14 @@
 import axios from 'axios';
-import setAuthToken from '../utils/setAuthToken';
 import jwt_decode from 'jwt-decode';
-
-import { SET_ERRORS, SET_CURRENT_USER } from './types';
+import setAuthToken from '../utils/setAuthToken';
+import * as actions from './actions';
 
 // Register User
 export const registerUser = (userData, history) => dispatch => {
   axios
     .post('/api/users/register', userData)
     .then(res => history.push('/login'))
-    .catch(err => dispatch({ type: SET_ERRORS, payload: err.response.data }));
+    .catch(err => dispatch(actions.setErrors(err.response.data)));
 };
 
 // Login - Get User Token
@@ -26,14 +25,9 @@ export const loginUser = userData => dispatch => {
       // Decode token to get user data
       const decoded = jwt_decode(token);
       // Set current user
-      dispatch(setCurrentUser(decoded));
+      dispatch(actions.setCurrentUser(decoded));
     })
-    .catch(err =>
-      dispatch({
-        type: SET_ERRORS,
-        payload: err.response.data,
-      }),
-    );
+    .catch(err => dispatch(actions.setErrors(err.response.data)));
 };
 
 // Log user out
@@ -43,8 +37,5 @@ export const logoutUser = () => dispatch => {
   // Remove auth header for future requests
   setAuthToken(false);
   // Set current user to {} which will set isAuthenticated to false
-  dispatch(setCurrentUser({}));
+  dispatch(actions.setCurrentUser({}));
 };
-
-// Set logged in user
-export const setCurrentUser = payload => ({ type: SET_CURRENT_USER, payload });

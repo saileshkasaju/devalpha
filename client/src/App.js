@@ -17,12 +17,14 @@ import AddEducation from './components/add-credentials/AddEducation';
 import AddExperience from './components/add-credentials/AddExperience';
 import Profiles from './components/profiles/Profiles';
 import Profile from './components/profile/Profile';
+import Posts from './components/posts/Posts';
+import Post from './components/post/Post';
 import NotFound from './components/not-found/NotFound';
 
 import './App.css';
-import { setCurrentUser, logoutUser } from './actions/authActions';
+import { logoutUser } from './actions/authActions';
 import setAuthToken from './utils/setAuthToken';
-import { clearCurrentProfile } from './actions/profileActions';
+import { clearCurrentProfile, setCurrentUser } from './actions/actions';
 import PrivateRoute from './components/common/PrivateRoute';
 
 // Check for token
@@ -58,6 +60,7 @@ class App extends Component {
               <Route exact path="/register" component={Register} />
               <Route exact path="/profiles" component={Profiles} />
               <Route exact path="/profile/:handle" component={Profile} />
+              <Route exact path="/feed" component={Posts} />
               <Route exact path="/not-found" component={NotFound} />
               <Switch>
                 <PrivateRoute exact path="/dashboard" component={Dashboard} />
@@ -73,6 +76,9 @@ class App extends Component {
               </Switch>
               <Switch>
                 <PrivateRoute exact path="/add-education" component={AddEducation} />
+              </Switch>
+              <Switch>
+                <PrivateRoute exact path="/post/:id" component={Post} />
               </Switch>
             </div>
             <Footer />

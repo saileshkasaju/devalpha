@@ -3,7 +3,7 @@ import { NavLink, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { logoutUser } from '../../actions/authActions';
-import { clearCurrentProfile } from '../../actions/profileActions';
+import { clearCurrentProfile } from '../../actions/actions';
 
 class Navbar extends Component {
   static propTypes = {
@@ -22,6 +22,11 @@ class Navbar extends Component {
     } = this.props;
     const authLinks = (
       <ul className="navbar-nav ml-auto">
+        <li className="nav-item">
+          <NavLink className="nav-link" to="/feed">
+            Post Feed
+          </NavLink>
+        </li>
         <li className="nav-item">
           <NavLink className="nav-link" to="/dashboard">
             Dashboard
