@@ -14,10 +14,6 @@ const read = fs.readFileSync;
 
 const app = express();
 
-require('dotenv').config();
-
-console.log(process.env.MONGO_URI);
-
 // CORS middleware
 const allowedOrigins = [
   'http://localhost:3000',
