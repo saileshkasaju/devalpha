@@ -7,6 +7,7 @@ const cors = require('cors');
 const users = require('./routes/api/users');
 const profiles = require('./routes/api/profile');
 const posts = require('./routes/api/posts');
+const path = require('path');
 const https = require('https');
 const fs = require('fs');
 
@@ -64,32 +65,42 @@ app.use('/api/users', users);
 app.use('/api/profile', profiles);
 app.use('/api/posts', posts);
 
-// HTTPS server
-let certificate = read('./server.crt', 'utf8');
-let chainLines = read('./domain_ca.crt', 'utf8').split('\n');
-let cert = [];
-let ca = [];
-chainLines.forEach(function(line) {
-  cert.push(line);
-  if (line.match(/-END CERTIFICATE-/)) {
-    ca.push(cert.join('\n'));
-    cert = [];
-  }
-});
-
-let httpsOptions = {
-  key: read('./server.key'),
-  cert: certificate,
-  ca: ca,
-};
+// heroku deployment
+// Serve static assets if in production
 if (process.env.NODE_ENV === 'production') {
-  try {
-    secServer = https.createServer(httpsOptions, app);
-    secServer.listen(443);
-  } catch (err) {
-    console.log('https could not be served');
-  }
+  // Set static folder
+  app.use(express.static('client/build'));
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+  });
 }
+
+// HTTPS server
+// let certificate = read('./server.crt', 'utf8');
+// let chainLines = read('./domain_ca.crt', 'utf8').split('\n');
+// let cert = [];
+// let ca = [];
+// chainLines.forEach(function(line) {
+//   cert.push(line);
+//   if (line.match(/-END CERTIFICATE-/)) {
+//     ca.push(cert.join('\n'));
+//     cert = [];
+//   }
+// });
+
+// let httpsOptions = {
+//   key: read('./server.key'),
+//   cert: certificate,
+//   ca: ca,
+// };
+// if (process.env.NODE_ENV === 'production') {
+//   try {
+//     secServer = https.createServer(httpsOptions, app);
+//     secServer.listen(443);
+//   } catch (err) {
+//     console.log('https could not be served');
+//   }
+// }
 
 // HTTP server
 const port = process.env.PORT || 5000;
